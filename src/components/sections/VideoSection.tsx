@@ -50,7 +50,7 @@ export default function VideoSection() {
       >
         <video
           ref={videoRef}
-          src="https://res.cloudinary.com/dva6qcuyj/video/upload/v1773378863/Pavilion_Square_Luxury_Residences_Urban_Luxe_1080p_ikha6npload/v1773378863/Pavilion_Square_Luxury_Residences_Urban_Luxe_1080p_ikha6n.mp4"
+          src="https://res.cloudinary.com/dva6qcuyj/video/upload/v1773378863/Pavilion_Square_Luxury_Residences_Urban_Luxe_1080p_ikha6n.mp4"
           muted
           loop
           playsInline
