@@ -3,16 +3,48 @@
 import { useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 
+const FALLBACK_VIDEO_SRC =
+  "https://si0ebnzpapdideac.public.blob.vercel-storage.com/Pavilion_Square_Luxury_Residences_Urban_Luxe_1080p.mp4";
+
 export default function VideoSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const videoSrc = process.env.NEXT_PUBLIC_HERO_VIDEO_URL ?? FALLBACK_VIDEO_SRC;
+  
+  // Only play the video if it's currently in the viewport to aggressively save resources
+  const isInView = useInView(videoRef, { margin: "0px 0px -200px 0px" });
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    video.play().catch((error) => {
-      console.error('Video play failed:', error);
-    });
+    if (isInView) {
+      video.play().catch((error) => {
+        console.warn("Video autoplay failed", error);
+      });
+    } else {
+      video.pause();
+    }
+  }, [isInView]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Reset video to start if it crosses the 2:20 mark (140 seconds)
+    const handleTimeUpdate = () => {
+      // 2 minutes and 20 seconds = 140 seconds
+      if (video.currentTime >= 140) {
+        video.currentTime = 0;
+        video.play().catch((error) => {
+          console.warn("Video replay failed", error);
+        });
+      }
+    };
+
+    video.addEventListener("timeupdate", handleTimeUpdate);
+    return () => {
+      video.removeEventListener("timeupdate", handleTimeUpdate);
+    };
   }, []);
 
   return (
@@ -26,11 +58,23 @@ export default function VideoSection() {
       >
         <video
           ref={videoRef}
-          src="https://si0ebnzpapdideac.public.blob.vercel-storage.com/Pavilion_Square_Luxury_Residences_Urban_Luxe_1080p.mp4"
+          src={videoSrc}
+          autoPlay
           muted
           loop
           playsInline
-          autoPlay
+          preload="metadata"
+          crossOrigin="anonymous"
+          onCanPlay={() => {
+            if (isInView) {
+              videoRef.current?.play().catch((error) => {
+                console.warn("Video play onCanPlay failed", error);
+              });
+            }
+          }}
+          onError={(event) => {
+            console.error("Video failed to load", event.currentTarget.error, videoSrc);
+          }}
           className="w-full h-full object-cover"
         />
         
