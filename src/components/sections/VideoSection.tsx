@@ -5,22 +5,15 @@ import { motion, useInView } from "framer-motion";
 
 export default function VideoSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  
-  // Only play the video if it's currently in the viewport to aggressively save resources
-  const isInView = useInView(videoRef, { margin: "0px 0px -200px 0px" });
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    if (isInView) {
-      video.play().catch((error) => {
-        console.error('Video play failed:', error);
-      });
-    } else {
-      video.pause();
-    }
-  }, [isInView]);
+    video.play().catch((error) => {
+      console.error('Video play failed:', error);
+    });
+  }, []);
 
   return (
     <section className="relative w-full h-[100dvh] sm:h-screen bg-[#060914] overflow-hidden flex items-center justify-center pointer-events-none">
@@ -37,6 +30,7 @@ export default function VideoSection() {
           muted
           loop
           playsInline
+          autoPlay
           className="w-full h-full object-cover"
         />
         
