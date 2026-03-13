@@ -14,30 +14,13 @@ export default function VideoSection() {
     if (!video) return;
 
     if (isInView) {
-      video.play().catch(() => {});
+      video.play().catch((error) => {
+        console.error('Video play failed:', error);
+      });
     } else {
       video.pause();
     }
   }, [isInView]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    // Reset video to start if it crosses the 2:20 mark (140 seconds)
-    const handleTimeUpdate = () => {
-      // 2 minutes and 20 seconds = 140 seconds
-      if (video.currentTime >= 140) {
-        video.currentTime = 0;
-        video.play().catch(() => {});
-      }
-    };
-
-    video.addEventListener("timeupdate", handleTimeUpdate);
-    return () => {
-      video.removeEventListener("timeupdate", handleTimeUpdate);
-    };
-  }, []);
 
   return (
     <section className="relative w-full h-[100dvh] sm:h-screen bg-[#060914] overflow-hidden flex items-center justify-center pointer-events-none">
